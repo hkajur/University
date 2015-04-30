@@ -32,6 +32,39 @@ public class MysqlConnect implements Closeable, Drivers {
         }
     }
 
+    public void insert(String query){
+
+    }
+
+    public void update(String query){
+
+    }
+
+    public void select(String query, String... columns){
+
+        try {
+
+            Statement stmt = conn.createStatement();
+            ResultSet rset = stmt.executeQuery(query);
+
+            while(rset.next()){
+
+                for(String column : columns){
+                    System.out.print(rset.getString(column) + "\t");
+                }
+
+                System.out.println();
+            }
+
+            rset.close();
+            stmt.close();
+
+        } catch(SQLException ex){
+            System.err.println(ex);
+            close();
+            System.exit(1);
+        }
+    }
 
     public void close(){
 
@@ -45,4 +78,15 @@ public class MysqlConnect implements Closeable, Drivers {
             System.exit(1);
         }
     }
+
+    public static void main(String[] args){
+
+        String query = "SELECT * FROM Users";
+        String[] columns = {"username", "email"};
+
+        MysqlConnect mysql = new MysqlConnect("localhost", "root", "welcome", "NextSemester");
+        mysql.select(query, columns);
+        mysql.close();
+    }
+
 }
