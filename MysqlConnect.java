@@ -88,8 +88,9 @@ public class MysqlConnect implements Closeable, Drivers {
 
     }
 
-    public void select(String query, String... columns){
+    public String select(String query, String... columns){
 
+        String result = "";
         try {
 
             Statement stmt = conn.createStatement();
@@ -98,10 +99,11 @@ public class MysqlConnect implements Closeable, Drivers {
             while(rset.next()){
 
                 for(String column : columns){
-                    System.out.print(rset.getString(column) + "\t");
+                    //System.out.print(rset.getString(column) + "\t");
+                    result = result + rset.getString(column);
                 }
 
-                System.out.println();
+                //System.out.println();
             }
 
             rset.close();
@@ -112,6 +114,8 @@ public class MysqlConnect implements Closeable, Drivers {
             close();
             System.exit(1);
         }
+
+        return result;
     }
 
     public void close(){

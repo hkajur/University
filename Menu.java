@@ -57,7 +57,18 @@ public class Menu {
 
             switch(option){
                 case 1:
-                    System.out.print("Enter student id: ");
+
+                    System.out.print("Enter student username: ");
+                    String username = scanner.next();
+
+                    System.out.print("Enter student password: ");
+                    String password = scanner.next();
+
+                    String column = "id";
+
+                    String res = mysqlconn.select("SELECT id FROM CS434_Student WHERE username = '" + username + "' AND password = '" + password + "'", column);
+                    int id = Integer.parseInt(res);
+
                     option = scanner.nextInt();
                     break;
                 case 2:
@@ -161,6 +172,7 @@ public class Menu {
     public static void main(String[] args){
 
         scanner = new Scanner(System.in);
+        mysqlconn = new MysqlConnect("database.prop");
         mainMenu();
 
     }
