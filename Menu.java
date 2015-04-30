@@ -32,6 +32,7 @@ public class Menu {
                     System.exit(0);
                     break;
                 default:
+                    System.err.println("Invalid option");
                     System.err.println("Invalid option, please enter again");
                     option = scanner.nextInt();
                     break;
@@ -154,9 +155,11 @@ public class Menu {
             }
         }
     }
+
     public static void main(String[] args){
 
         scanner = new Scanner(System.in);
         mainMenu();
+
     }
 }
