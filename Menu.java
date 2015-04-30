@@ -3,6 +3,7 @@ import java.util.Scanner;
 public class Menu {
 
     private static Scanner scanner;
+    private static MysqlConnect mysqlconn;
 
     public static void mainMenu(){
 
@@ -56,6 +57,7 @@ public class Menu {
 
             switch(option){
                 case 1:
+                    System.out.print("Enter student id: ");
                     option = scanner.nextInt();
                     break;
                 case 2:

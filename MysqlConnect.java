@@ -130,7 +130,7 @@ public class MysqlConnect implements Closeable, Drivers {
     public static void main(String[] args){
 
         String query = "SELECT * FROM Users";
-        String[] columns = {"username", "email"};
+        String[] columns = {"username", "mail"};
 
         MysqlConnect mysql = new MysqlConnect("database.prop");
         mysql.select(query, columns);
