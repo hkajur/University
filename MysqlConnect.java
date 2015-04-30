@@ -1,14 +1,62 @@
 import java.io.Closeable;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Properties;
 
 public class MysqlConnect implements Closeable, Drivers {
 
     private Connection conn;
+
+    public MysqlConnect(String filename){
+
+        try {
+
+            Class.forName(MYSQL_CLASS_DRIVER);
+
+            File file = new File(filename);
+
+            if(!file.exists())
+                throw new FileNotFoundException();
+
+            Properties prop = new Properties();
+            prop.load(new FileInputStream(file));
+
+            String host = prop.getProperty("host");
+            String username = prop.getProperty("user");
+            String password = prop.getProperty("pass");
+            String db = prop.getProperty("db");
+
+
+            String url = MYSQL_CONN_DRIVER
+                        + host +"/" + db + "?"
+                        + "user=" + username
+                        + "&password=" + password;
+
+            conn = DriverManager.getConnection(url);
+
+        } catch(FileNotFoundException fe){
+            System.err.println("File: " + filename + " not found");
+            System.exit(1);
+        } catch(IOException ex){
+            System.err.println(ex);
+            System.exit(1);
+        } catch(ClassNotFoundException ce){
+            System.err.println(ce);
+            System.exit(1);
+        } catch(SQLException ce){
+            System.err.println("Unable to connect to the MYSQL, check if its running");
+            System.exit(1);
+        }
+
+    }
 
     public MysqlConnect(String host, String username, String password, String db){
 
@@ -84,7 +132,7 @@ public class MysqlConnect implements Closeable, Drivers {
         String query = "SELECT * FROM Users";
         String[] columns = {"username", "email"};
 
-        MysqlConnect mysql = new MysqlConnect("localhost", "root", "welcome", "NextSemester");
+        MysqlConnect mysql = new MysqlConnect("database.prop");
         mysql.select(query, columns);
         mysql.close();
     }
