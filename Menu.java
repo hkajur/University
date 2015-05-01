@@ -243,6 +243,50 @@ public class Menu {
         }
     }
 
+    public static void printSchedules(){
+
+        System.out.print("Please enter the term to print schedule for: ");
+        String term = scanner.next();
+
+        String query = "SELECT CourseTitle, M.SecNum, Room, Day, StartTime, EndTIme " +
+                       "FROM CS434_MeetingTime M, CS434_Section S, CS434_Course C " +
+                       "WHERE M.SecNum = S.SecNum and S.Course = C.ID and M.Term = '" + term + "'";
+
+        String result = connect.select(query, "\t", "CourseTitle", "M.SecNum", "Room", "Day", "StartTime", "EndTime");
+
+        System.out.print(result);
+
+    }
+
+    public static void printCatalog(){
+
+        System.out.print("Please enter the term to print catalog for: ");
+        String term = scanner.next();
+
+        String query = "SELECT CourseTitle, SecNum, concat(LName, ', ', FName) AS FullName, Capacity " +
+                       "FROM CS434_Section S, CS434_Course C, CS434_Instructor I " +
+                       "WHERE S.Course = C.ID and S.Instructor = I.ID and Term = '" + term + "'";
+
+        String result = connect.select(query, "\t", "CourseTitle", "SecNum", "FullName", "Capacity");
+
+        System.out.print(result);
+
+    }
+
+    public static void printHonorsList(){
+
+        System.out.print("Please enter the department to print honors list for: ");
+        int deptId = scanner.nextInt();
+
+        String query = "select concat(LName, ', ', FName) AS FullName, GPA " +
+                       "from CS434_Student " +
+                       "where Department = " + deptId + " AND GPA > 3.8";
+        String result = connect.select(query, "\t", "FullName", "GPA");
+
+        System.out.print(result);
+
+    }
+
     public static void reportingMenu(){
 
         showReportingMenu();
@@ -252,12 +296,18 @@ public class Menu {
 
             switch(option){
                 case 1:
+                    printSchedules();
+                    showReportingMenu();
                     option = scanner.nextInt();
                     break;
                 case 2:
+                    printCatalog();
+                    showReportingMenu();
                     option = scanner.nextInt();
                     break;
                 case 3:
+                    printHonorsList();
+                    showReportingMenu();
                     option = scanner.nextInt();
                     break;
                 case 4:
