@@ -10,6 +10,7 @@ public class Menu {
     private static final String[] COURSE_COLUMNS = {"CourseTitle", "Hours", "Department"};
     private static final String[] INSTRUCTOR_COLUMNS = {"LName", "FName", "Department", "Office", "Phone", "Email"};
     private static final String[] STUDENT_COLUMNS = {"LName", "FName", "Username", "Phone", "Street", "City", "State", "Zip", "Degree", "Department" };
+    private static final String[] SECTION_COLUMNS = {"Term", "SecNum", "Course", "Department", "Instructor", "Capacity"};
 
     public static void showMainMenu(){
 
@@ -54,9 +55,11 @@ public class Menu {
         System.out.println("(4) Quit");
 
     }
+
     public static void mainMenu(){
 
         showMainMenu();
+        System.out.print("Enter option to continue: ");
         int option = scanner.nextInt();
 
         while(true){
@@ -65,16 +68,19 @@ public class Menu {
                 case 1:
                     studentMenu();
                     showMainMenu();
+                    System.out.print("Enter option to continue: ");
                     option = scanner.nextInt();
                     break;
                 case 2:
                     administrativeMenu();
                     showMainMenu();
+                    System.out.print("Enter option to continue: ");
                     option = scanner.nextInt();
                     break;
                 case 3:
                     reportingMenu();
                     showMainMenu();
+                    System.out.print("Enter option to continue: ");
                     option = scanner.nextInt();
                     break;
                 case 4:
@@ -87,6 +93,7 @@ public class Menu {
                     break;
                 default:
                     System.err.println("Invalid option, please enter again");
+                    System.out.print("Enter option to continue: ");
                     option = scanner.nextInt();
                     break;
             }
@@ -174,6 +181,7 @@ public class Menu {
     public static void studentMenu(){
 
         showStudentMenu();
+        System.out.print("Enter option to continue: ");
         int option = scanner.nextInt();
 
         while(option != 5){
@@ -183,6 +191,7 @@ public class Menu {
                 case 1:
                     registerCourses();
                     showStudentMenu();
+                    System.out.print("Enter option to continue: ");
                     option = scanner.nextInt();
                     break;
                 case 2:
@@ -198,16 +207,19 @@ public class Menu {
                     }
 
                     showStudentMenu();
+                    System.out.print("Enter option to continue: ");
                     option = scanner.nextInt();
                     break;
                 case 3:
                     requestTranscript();
                     showStudentMenu();
+                    System.out.print("Enter option to continue: ");
                     option = scanner.nextInt();
                     break;
                 case 4:
                     computeGpa();
                     showStudentMenu();
+                    System.out.print("Enter option to continue: ");
                     option = scanner.nextInt();
                     break;
                 case 5:
@@ -220,6 +232,7 @@ public class Menu {
                     break;
                 default:
                     System.err.println("Invalid option, please enter again");
+                    System.out.print("Enter option to continue: ");
                     option = scanner.nextInt();
                     break;
             }
@@ -245,7 +258,6 @@ public class Menu {
 
         connect.insert("CS434_Course", COURSE_COLUMNS, columnValues);
         System.out.println("Course successfully inserted");
-
     }
 
     public static void dropCourse(){
@@ -256,6 +268,39 @@ public class Menu {
         connect.delete("DELETE FROM CS434_Course WHERE CourseTitle = '" + courseTitle + "'");
         System.out.println("Course successfully deleted");
 
+    }
+
+    public static void insertSection(){
+
+        System.out.print("Enter the term info: ");
+        String term = scanner.next();
+
+        System.out.print("Enter the section number: ");
+        int secNum = scanner.nextInt();
+
+        System.out.print("Enter the Course Id: ");
+        int courseId = scanner.nextInt();
+
+        System.out.print("Enter the Department Id: ");
+        int deptId = scanner.nextInt();
+
+        System.out.print("Enter the Instructor Id: ");
+        int instrId = scanner.nextInt();
+
+        System.out.print("Enter the number of maximum students: ");
+        int capacity = scanner.nextInt();
+
+        Object[] columnValues = new Object[6];
+
+        columnValues[0] = term;
+        columnValues[1] = secNum;
+        columnValues[2] = courseId;
+        columnValues[3] = deptId;
+        columnValues[4] = instrId;
+        columnValues[5] = capacity;
+
+        connect.insert("CS434_Section", SECTION_COLUMNS, columnValues);
+        System.out.println("Section Successfully Inserted");
     }
 
     public static void insertProfessor(){
@@ -381,6 +426,7 @@ public class Menu {
     public static void administrativeMenu(){
 
         showAdministrativeMenu();
+        System.out.print("Enter option to continue: ");
         int option = scanner.nextInt();
 
         while(option != 7){
@@ -398,12 +444,14 @@ public class Menu {
                     }
 
                     showAdministrativeMenu();
+                    System.out.print("Enter option to continue: ");
                     option = scanner.nextInt();
 
                     break;
                 case 2:
-
+                    insertSection();
                     showAdministrativeMenu();
+                    System.out.print("Enter option to continue: ");
                     option = scanner.nextInt();
 
                     break;
@@ -419,10 +467,12 @@ public class Menu {
                     }
 
                     showAdministrativeMenu();
+                    System.out.print("Enter option to continue: ");
                     option = scanner.nextInt();
                     break;
                 case 4:
                     showAdministrativeMenu();
+                    System.out.print("Enter option to continue: ");
                     option = scanner.nextInt();
                     break;
                 case 5:
@@ -437,11 +487,13 @@ public class Menu {
                     }
 
                     showAdministrativeMenu();
+                    System.out.print("Enter option to continue: ");
                     option = scanner.nextInt();
                     break;
                 case 6:
                     instructorTeaching();
                     showAdministrativeMenu();
+                    System.out.print("Enter option to continue: ");
                     option = scanner.nextInt();
                     break;
                 case 7:
@@ -454,6 +506,7 @@ public class Menu {
                     break;
                 default:
                     System.err.println("Invalid option, please enter again");
+                    System.out.print("Enter option to continue: ");
                     option = scanner.nextInt();
                     break;
             }
@@ -511,6 +564,7 @@ public class Menu {
     public static void reportingMenu(){
 
         showReportingMenu();
+        System.out.print("Enter option to continue: ");
         int option = scanner.nextInt();
 
         while(option != 4){
@@ -519,16 +573,19 @@ public class Menu {
                 case 1:
                     printSchedules();
                     showReportingMenu();
+                    System.out.print("Enter option to continue: ");
                     option = scanner.nextInt();
                     break;
                 case 2:
                     printCatalog();
                     showReportingMenu();
+                    System.out.print("Enter option to continue: ");
                     option = scanner.nextInt();
                     break;
                 case 3:
                     printHonorsList();
                     showReportingMenu();
+                    System.out.print("Enter option to continue: ");
                     option = scanner.nextInt();
                     break;
                 case 4:
@@ -541,6 +598,7 @@ public class Menu {
                     break;
                 default:
                     System.err.println("Invalid option, please enter again");
+                    System.out.print("Enter option to continue: ");
                     option = scanner.nextInt();
                     break;
             }
