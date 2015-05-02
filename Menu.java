@@ -7,6 +7,8 @@ public class Menu {
     private static MysqlConnect connect;
 
     private static final String[] ENROLLMENT_COLUMNS = {"Student", "Term", "SecNum", "Grade"};
+    private static final String[] COURSE_COLUMNS = {"CourseTitle", "Hours", "Department"};
+    private static final String[] INSTRUCTOR_COLUMNS = {"LName", "FName", "Department", "Office", "Phone", "Email"};
 
     public static void showMainMenu(){
 
@@ -51,7 +53,6 @@ public class Menu {
         System.out.println("(4) Quit");
 
     }
-
     public static void mainMenu(){
 
         showMainMenu();
@@ -62,14 +63,17 @@ public class Menu {
             switch(option){
                 case 1:
                     studentMenu();
+                    showMainMenu();
                     option = scanner.nextInt();
                     break;
                 case 2:
                     administrativeMenu();
+                    showMainMenu();
                     option = scanner.nextInt();
                     break;
                 case 3:
                     reportingMenu();
+                    showMainMenu();
                     option = scanner.nextInt();
                     break;
                 case 4:
@@ -89,9 +93,9 @@ public class Menu {
 
     }
 
-    public static void addCourse(){
+    public static void studentAddCourse(){
 
-        System.out.print("Enter student id: " );
+        System.out.print("Enter student id: ");
         String id = scanner.next();
 
         System.out.print("Enter term to register: ");
@@ -112,13 +116,33 @@ public class Menu {
 
     }
 
+    public static void studentDropCourse(){
+
+        System.out.print("Enter student id: ");
+        String id = scanner.next();
+
+        System.out.print("Enter term to register: ");
+        String term = scanner.next();
+
+        System.out.print("Enter Section Number to register: " );
+        String secNum = scanner.next();
+
+        String query = "DELETE FROM CS434_Enrollment" +
+                       " WHERE Student = " + id +
+                       " AND Term = '" + term + "'" +
+                       " AND SecNum = " + secNum;
+
+        connect.delete(query);
+        System.out.println("Course Successfully dropped");
+    }
+
     public static void registerCourses(){
 
         System.out.print("Do you want to add a course?");
         String option = scanner.next();
 
         while(option.equalsIgnoreCase("y") || option.equalsIgnoreCase("yes")){
-            addCourse();
+            studentAddCourse();
             System.out.print("Do you want to add a course? ");
             option = scanner.next();
         }
@@ -151,7 +175,7 @@ public class Menu {
         showStudentMenu();
         int option = scanner.nextInt();
 
-        while(true){
+        while(option != 5){
 
             switch(option){
 
@@ -167,9 +191,9 @@ public class Menu {
                     int addDropOption = scanner.nextInt();
 
                     if(addDropOption == 1){
-                        addCourse();
+                        studentAddCourse();
                     } else if(addDropOption == 2){
-
+                        studentDropCourse();
                     }
 
                     showStudentMenu();
@@ -186,12 +210,12 @@ public class Menu {
                     option = scanner.nextInt();
                     break;
                 case 5:
-                    try {
-                        connect.close();
-                        System.exit(0);
-                    } catch(IOException io){
-                        System.err.println(io);
-                    }
+                    // try {
+                    //     connect.close();
+                    //     System.exit(0);
+                    // } catch(IOException io){
+                    //     System.err.println(io);
+                    // }
                     break;
                 default:
                     System.err.println("Invalid option, please enter again");
@@ -201,39 +225,139 @@ public class Menu {
         }
     }
 
+    public static void insertCourse(){
+
+        System.out.print("Enter the name of the course: ");
+        String courseTitle = scanner.next();
+
+        System.out.print("Enter the number of hours: ");
+        int hours = scanner.nextInt();
+
+        System.out.print("Enter the Department ID: ");
+        int deptId = scanner.nextInt();
+
+        Object[] columnValues = new Object[3];
+
+        columnValues[0] = courseTitle;
+        columnValues[1] = new Integer(hours);
+        columnValues[2] = new Integer(deptId);
+
+        connect.insert("CS434_Course", COURSE_COLUMNS, columnValues);
+        System.out.println("Course successfully inserted");
+
+    }
+
+    public static void dropCourse(){
+
+        System.out.print("Enter the name of course to drop: ");
+        String courseTitle = scanner.next();
+
+        connect.delete("DELETE FROM CS434_Course WHERE CourseTitle = '" + courseTitle + "'");
+        System.out.println("Course successfully deleted");
+
+    }
+
+    public static void insertProfessor(){
+
+        System.out.print("Enter the Last Name of Instructor: ");
+        String lname = scanner.next();
+
+        System.out.print("Enter the First Name of Instructor: ");
+        String fname = scanner.next();
+
+        System.out.print("Enter the Department Id: ");
+        int deptId = scanner.nextInt();
+
+        System.out.print("Enter the Office Info: ");
+        String office = scanner.next();
+
+        System.out.print("Enter the Phone Number: ");
+        String phone = scanner.next();
+
+        System.out.print("Enter the Email: ");
+        String email = scanner.next();
+
+        Object[] columnValues = new Object[6];
+
+        columnValues[0] = lname;
+        columnValues[1] = fname;
+        columnValues[2] = deptId;
+        columnValues[3] = office;
+        columnValues[4] = phone;
+        columnValues[5] = email;
+
+        connect.insert("CS434_Instructor", INSTRUCTOR_COLUMNS, columnValues);
+        System.out.println("Instructor successfully added");
+    }
+
+    public static void dropProfessor(){
+
+        System.out.print("Enter the email of the professor to drop: ");
+        String email = scanner.next();
+
+        String query = "DELETE FROM CS434_Instructor" +
+                       " WHERE Email = '" + email + "'";
+
+        connect.delete(query);
+        System.out.println("Professor successfully deleted");
+    }
+
     public static void administrativeMenu(){
 
         showAdministrativeMenu();
         int option = scanner.nextInt();
 
-        while(true){
+        while(option != 7){
 
             switch(option){
                 case 1:
+                    System.out.print("Press 1 to insert or press 2 to drop course: ");
+                    int op = scanner.nextInt();
+                    if(op == 1){
+                        insertCourse();
+                    } else {
+                        dropCourse();
+                    }
+                    showAdministrativeMenu();
                     option = scanner.nextInt();
                     break;
                 case 2:
+                    showAdministrativeMenu();
                     option = scanner.nextInt();
                     break;
                 case 3:
+
+                    System.out.print("Press 1 to insert or press 2 to drop professor: ");
+                    int professorOp = scanner.nextInt();
+
+                    if(professorOp == 1){
+                        insertProfessor();
+                    } else {
+                        dropProfessor();
+                    }
+
+                    showAdministrativeMenu();
                     option = scanner.nextInt();
                     break;
                 case 4:
+                    showAdministrativeMenu();
                     option = scanner.nextInt();
                     break;
                 case 5:
+                    showAdministrativeMenu();
                     option = scanner.nextInt();
                     break;
                 case 6:
+                    showAdministrativeMenu();
                     option = scanner.nextInt();
                     break;
                 case 7:
-                    try {
-                        connect.close();
-                        System.exit(0);
-                    } catch(IOException io){
-                        System.err.println(io);
-                    }
+                    // try {
+                    //     connect.close();
+                    //     System.exit(0);
+                    // } catch(IOException io){
+                    //     System.err.println(io);
+                    // }
                     break;
                 default:
                     System.err.println("Invalid option, please enter again");
@@ -283,7 +407,11 @@ public class Menu {
                        "where Department = " + deptId + " AND GPA > 3.8";
         String result = connect.select(query, "\t", "FullName", "GPA");
 
-        System.out.print(result);
+        if(result.equals("")){
+            System.out.println("There are no honors students in this department");
+        } else {
+            System.out.print(result);
+        }
 
     }
 
@@ -292,7 +420,7 @@ public class Menu {
         showReportingMenu();
         int option = scanner.nextInt();
 
-        while(true){
+        while(option != 4){
 
             switch(option){
                 case 1:
@@ -311,12 +439,12 @@ public class Menu {
                     option = scanner.nextInt();
                     break;
                 case 4:
-                    try {
-                        connect.close();
-                        System.exit(0);
-                    } catch(IOException io){
-                        System.err.println(io);
-                    }
+                    // try {
+                    //     connect.close();
+                    //     System.exit(0);
+                    // } catch(IOException io){
+                    //     System.err.println(io);
+                    // }
                     break;
                 default:
                     System.err.println("Invalid option, please enter again");
