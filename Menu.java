@@ -9,6 +9,7 @@ public class Menu {
     private static final String[] ENROLLMENT_COLUMNS = {"Student", "Term", "SecNum", "Grade"};
     private static final String[] COURSE_COLUMNS = {"CourseTitle", "Hours", "Department"};
     private static final String[] INSTRUCTOR_COLUMNS = {"LName", "FName", "Department", "Office", "Phone", "Email"};
+    private static final String[] STUDENT_COLUMNS = {"LName", "FName", "Username", "Phone", "Street", "City", "State", "Zip", "Degree", "Department" };
 
     public static void showMainMenu(){
 
@@ -302,6 +303,81 @@ public class Menu {
         System.out.println("Professor successfully deleted");
     }
 
+    public static void insertStudent(){
+
+        System.out.print("Enter the Last Name of Student: ");
+        String lname = scanner.next();
+
+        System.out.print("Enter the First Name of Student: ");
+        String fname = scanner.next();
+
+        System.out.print("Enter the Username of Student: ");
+        String username = scanner.next();
+
+        System.out.print("Enter the Phone Number: ");
+        String phone = scanner.next();
+
+        System.out.print("Enter the Student Street Address: ");
+        String streetAddress = scanner.next();
+
+        System.out.print("Enter the Student City: ");
+        String city = scanner.next();
+
+        System.out.print("Enter the Student State: ");
+        String state = scanner.next();
+
+        System.out.print("Enter the Student Zipcode: ");
+        String zipCode = scanner.next();
+
+        System.out.print("Enter the Student Degree Type: ");
+        String degreeType = scanner.next();
+
+        System.out.print("Enter the Student Department: ");
+        String dept = scanner.next();
+
+        Object[] columnValues = new Object[10];
+
+        columnValues[0] = lname;
+        columnValues[1] = fname;
+        columnValues[2] = username;
+        columnValues[3] = phone;
+        columnValues[4] = streetAddress;
+        columnValues[5] = city;
+        columnValues[6] = state;
+        columnValues[7] = zipCode;
+        columnValues[8] = degreeType;
+        columnValues[9] = dept;
+
+        connect.insert("CS434_Student", STUDENT_COLUMNS, columnValues);
+        System.out.println("Student successfully added");
+
+    }
+
+    public static void dropStudent(){
+
+        System.out.print("Enter the username of the student to drop: ");
+        String username = scanner.next();
+
+        String query = "DELETE FROM CS434_Student" +
+                       " WHERE Username = '" + username + "'";
+
+        connect.delete(query);
+        System.out.println("Student successfully deleted");
+    }
+
+    public static void instructorTeaching(){
+
+        String query = "SELECT Term, concat(LName, ', ', FName) as FullName, count(*) as CoursesTeaching" +
+                       " FROM CS434_Section, CS434_Instructor" +
+                       " WHERE CS434_Section.Instructor = CS434_Instructor.ID" +
+                       " GROUP BY Term, Instructor";
+
+        String result = connect.select(query, "\t", "Term", "FullName", "CoursesTeaching");
+
+        System.out.print(result);
+        System.out.flush();
+    }
+
     public static void administrativeMenu(){
 
         showAdministrativeMenu();
@@ -311,19 +387,25 @@ public class Menu {
 
             switch(option){
                 case 1:
+
                     System.out.print("Press 1 to insert or press 2 to drop course: ");
                     int op = scanner.nextInt();
+
                     if(op == 1){
                         insertCourse();
                     } else {
                         dropCourse();
                     }
+
                     showAdministrativeMenu();
                     option = scanner.nextInt();
+
                     break;
                 case 2:
+
                     showAdministrativeMenu();
                     option = scanner.nextInt();
+
                     break;
                 case 3:
 
@@ -344,10 +426,21 @@ public class Menu {
                     option = scanner.nextInt();
                     break;
                 case 5:
+
+                    System.out.print("Press 1 to insert or press 2 to drop student: ");
+                    int studentOp = scanner.nextInt();
+
+                    if(studentOp == 1){
+                        insertStudent();
+                    } else {
+                        dropStudent();
+                    }
+
                     showAdministrativeMenu();
                     option = scanner.nextInt();
                     break;
                 case 6:
+                    instructorTeaching();
                     showAdministrativeMenu();
                     option = scanner.nextInt();
                     break;
@@ -467,4 +560,5 @@ public class Menu {
             System.err.println(io);
         }
     }
+
 }
