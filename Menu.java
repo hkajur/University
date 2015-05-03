@@ -632,7 +632,7 @@ public class Menu {
     public static void reportingMenu(){
 
         showReportingMenu();
-        System.out.print("Enter option to continue: ");
+        System.out.print("Enter Reporing option to continue: ");
         int option = scanner.nextInt();
 
         while(option != 4){
