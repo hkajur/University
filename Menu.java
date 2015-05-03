@@ -196,7 +196,7 @@ public class Menu {
     public static void studentMenu(){
 
         showStudentMenu();
-        System.out.print("Enter option to continue: ");
+        System.out.print("Enter Student option to continue: ");
         int option = scanner.nextInt();
 
         while(option != 5){
@@ -206,7 +206,7 @@ public class Menu {
                 case 1:
                     registerCourses();
                     //showStudentMenu();
-                    System.out.print("Enter option to continue: ");
+                    System.out.print("Enter Student option to continue: ");
                     option = scanner.nextInt();
                     break;
                 case 2:
@@ -222,19 +222,19 @@ public class Menu {
                     }
 
                     //showStudentMenu();
-                    System.out.print("Enter option to continue: ");
+                    System.out.print("Enter Student option to continue: ");
                     option = scanner.nextInt();
                     break;
                 case 3:
                     requestTranscript();
                     //showStudentMenu();
-                    System.out.print("Enter option to continue: ");
+                    System.out.print("Enter Student option to continue: ");
                     option = scanner.nextInt();
                     break;
                 case 4:
                     computeGpa();
                     //showStudentMenu();
-                    System.out.print("Enter option to continue: ");
+                    System.out.print("Enter Student option to continue: ");
                     option = scanner.nextInt();
                     break;
                 case 5:
@@ -247,7 +247,7 @@ public class Menu {
                     break;
                 default:
                     System.err.println("Invalid option, please enter again");
-                    System.out.print("Enter option to continue: ");
+                    System.out.print("Enter Student option to continue: ");
                     option = scanner.nextInt();
                     break;
             }
