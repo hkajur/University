@@ -6,11 +6,11 @@ public class Menu {
     private static Scanner scanner;
     private static MysqlConnect connect;
 
-    private static final String[] ENROLLMENT_COLUMNS = {"Student", "Term", "SecNum", "Grade"};
-    private static final String[] COURSE_COLUMNS = {"CourseTitle", "Hours", "Department"};
-    private static final String[] INSTRUCTOR_COLUMNS = {"LName", "FName", "Department", "Office", "Phone", "Email"};
-    private static final String[] STUDENT_COLUMNS = {"LName", "FName", "Username", "Phone", "Street", "City", "State", "Zip", "Degree", "Department" };
-    private static final String[] SECTION_COLUMNS = {"Term", "SecNum", "Course", "Department", "Instructor", "Capacity"};
+    private static final String[] INS_ENROLLMENT_COLUMNS = {"Student", "Term", "SecNum", "Grade"};
+    private static final String[] INS_COURSE_COLUMNS = {"CourseTitle", "Hours", "Department"};
+    private static final String[] INS_INSTRUCTOR_COLUMNS = {"LName", "FName", "Department", "Office", "Phone", "Email"};
+    private static final String[] INS_STUDENT_COLUMNS = {"LName", "FName", "Username", "Phone", "Street", "City", "State", "Zip", "Degree", "Department" };
+    private static final String[] INS_SECTION_COLUMNS = {"Term", "SecNum", "Course", "Department", "Instructor", "Capacity"};
 
     public static void showMainMenu(){
 
@@ -119,8 +119,15 @@ public class Menu {
         columnValues[2] = new Integer(secNum);
         columnValues[3] = new Integer(-1);
 
-        connect.insert("CS434_Enrollment", ENROLLMENT_COLUMNS, columnValues);
-        System.out.println("Course Successfully Registered");
+        int status = connect.insert("CS434_Enrollment", INS_ENROLLMENT_COLUMNS, columnValues);
+
+        if(status == -1){
+            System.out.println("Mysql error during insertion");
+        } else if(status == 0){
+            System.out.println("Course couldn't be registered for some reason");
+        } else {
+            System.out.println("Course successfully Registered");
+        }
 
     }
 
@@ -140,13 +147,20 @@ public class Menu {
                        " AND Term = '" + term + "'" +
                        " AND SecNum = " + secNum;
 
-        connect.delete(query);
-        System.out.println("Course Successfully dropped");
+        int status = connect.delete(query);
+
+        if(status == -1){
+            System.out.println("Mysql error during deletion");
+        } else if(status == 0){
+            System.out.println("No such course exists");
+        } else {
+            System.out.println("Student Course successfully dropped");
+        }
     }
 
     public static void registerCourses(){
 
-        System.out.print("Do you want to add a course?");
+        System.out.print("Do you want to add a course? ");
         String option = scanner.next();
 
         while(option.equalsIgnoreCase("y") || option.equalsIgnoreCase("yes")){
@@ -162,7 +176,7 @@ public class Menu {
         int id = scanner.nextInt();
 
         String query = "SELECT * FROM CS434_Enrollment WHERE Student = "  + id;
-        String result = connect.select(query, ",", "Student", "Term", "SecNum", "Grade");
+        String result = connect.select(query, "\t");
 
         System.out.print(result);
     }
@@ -173,7 +187,8 @@ public class Menu {
         int id = scanner.nextInt();
 
         String query = "SELECT GPA FROM CS434_Student WHERE id = "  + id;
-        String result = connect.select(query, "", "GPA");
+        String result = connect.select(query, "");
+
         System.out.print("Student GPA: " + result);
 
     }
@@ -190,7 +205,7 @@ public class Menu {
 
                 case 1:
                     registerCourses();
-                    showStudentMenu();
+                    //showStudentMenu();
                     System.out.print("Enter option to continue: ");
                     option = scanner.nextInt();
                     break;
@@ -206,19 +221,19 @@ public class Menu {
                         studentDropCourse();
                     }
 
-                    showStudentMenu();
+                    //showStudentMenu();
                     System.out.print("Enter option to continue: ");
                     option = scanner.nextInt();
                     break;
                 case 3:
                     requestTranscript();
-                    showStudentMenu();
+                    //showStudentMenu();
                     System.out.print("Enter option to continue: ");
                     option = scanner.nextInt();
                     break;
                 case 4:
                     computeGpa();
-                    showStudentMenu();
+                    //showStudentMenu();
                     System.out.print("Enter option to continue: ");
                     option = scanner.nextInt();
                     break;
@@ -256,8 +271,16 @@ public class Menu {
         columnValues[1] = new Integer(hours);
         columnValues[2] = new Integer(deptId);
 
-        connect.insert("CS434_Course", COURSE_COLUMNS, columnValues);
-        System.out.println("Course successfully inserted");
+        int status = connect.insert("CS434_Course", INS_COURSE_COLUMNS, columnValues);
+
+        if(status == -1){
+            System.out.println("Mysql error during insertion");
+        } else if(status == 0){
+            System.out.println("Course couldn't be created for some reason");
+        } else {
+            System.out.println("Course successfully Inserted");
+        }
+
     }
 
     public static void dropCourse(){
@@ -265,8 +288,17 @@ public class Menu {
         System.out.print("Enter the name of course to drop: ");
         String courseTitle = scanner.next();
 
-        connect.delete("DELETE FROM CS434_Course WHERE CourseTitle = '" + courseTitle + "'");
-        System.out.println("Course successfully deleted");
+        String query = "DELETE FROM CS434_Course WHERE CourseTitle = '" + courseTitle + "'";
+        int status = connect.delete(query);
+
+        if(status == -1){
+            System.out.println("Mysql error during deletion");
+        } else if(status == 0){
+            System.out.println("No such course exists");
+        } else {
+            System.out.println("Course successfully deleted");
+        }
+
 
     }
 
@@ -299,8 +331,15 @@ public class Menu {
         columnValues[4] = instrId;
         columnValues[5] = capacity;
 
-        connect.insert("CS434_Section", SECTION_COLUMNS, columnValues);
-        System.out.println("Section Successfully Inserted");
+        int status = connect.insert("CS434_Section", INS_SECTION_COLUMNS, columnValues);
+
+        if(status == -1){
+            System.out.println("Mysql error during insertion");
+        } else if(status == 0){
+            System.out.println("Section couldn't be created for some reason");
+        } else {
+            System.out.println("Section successfully Inserted");
+        }
     }
 
     public static void insertProfessor(){
@@ -332,8 +371,15 @@ public class Menu {
         columnValues[4] = phone;
         columnValues[5] = email;
 
-        connect.insert("CS434_Instructor", INSTRUCTOR_COLUMNS, columnValues);
-        System.out.println("Instructor successfully added");
+        int status = connect.insert("CS434_Instructor", INS_INSTRUCTOR_COLUMNS, columnValues);
+
+        if(status == -1){
+            System.out.println("Mysql error during insertion");
+        } else if(status == 0){
+            System.out.println("Section couldn't be created for some reason");
+        } else {
+            System.out.println("Section successfully Inserted");
+        }
     }
 
     public static void dropProfessor(){
@@ -344,8 +390,15 @@ public class Menu {
         String query = "DELETE FROM CS434_Instructor" +
                        " WHERE Email = '" + email + "'";
 
-        connect.delete(query);
-        System.out.println("Professor successfully deleted");
+        int status = connect.delete(query);
+
+        if(status == -1){
+            System.out.println("Mysql error during deletion");
+        } else if(status == 0){
+            System.out.println("No such professor exists");
+        } else {
+            System.out.println("Professor successfully deleted");
+        }
     }
 
     public static void insertStudent(){
@@ -393,8 +446,15 @@ public class Menu {
         columnValues[8] = degreeType;
         columnValues[9] = dept;
 
-        connect.insert("CS434_Student", STUDENT_COLUMNS, columnValues);
-        System.out.println("Student successfully added");
+        int status = connect.insert("CS434_Student", INS_STUDENT_COLUMNS, columnValues);
+
+        if(status == -1){
+            System.out.println("Mysql error during insertion");
+        } else if(status == 0){
+            System.out.println("Section couldn't be created for some reason");
+        } else {
+            System.out.println("Section successfully Inserted");
+        }
 
     }
 
@@ -406,8 +466,15 @@ public class Menu {
         String query = "DELETE FROM CS434_Student" +
                        " WHERE Username = '" + username + "'";
 
-        connect.delete(query);
-        System.out.println("Student successfully deleted");
+        int status = connect.delete(query);
+
+        if(status == -1){
+            System.out.println("Mysql error during deletion");
+        } else if(status == 0){
+            System.out.println("No such student exists");
+        } else {
+            System.out.println("Student successfully deleted");
+        }
     }
 
     public static void instructorTeaching(){
@@ -417,16 +484,17 @@ public class Menu {
                        " WHERE CS434_Section.Instructor = CS434_Instructor.ID" +
                        " GROUP BY Term, Instructor";
 
-        String result = connect.select(query, "\t", "Term", "FullName", "CoursesTeaching");
+        String result = connect.select(query, "\t");
 
         System.out.print(result);
         System.out.flush();
     }
 
+
     public static void administrativeMenu(){
 
         showAdministrativeMenu();
-        System.out.print("Enter option to continue: ");
+        System.out.print("Enter Admin option to continue: ");
         int option = scanner.nextInt();
 
         while(option != 7){
@@ -443,15 +511,15 @@ public class Menu {
                         dropCourse();
                     }
 
-                    showAdministrativeMenu();
-                    System.out.print("Enter option to continue: ");
+                    //showAdministrativeMenu();
+                    System.out.print("Enter Admin option to continue: ");
                     option = scanner.nextInt();
 
                     break;
                 case 2:
                     insertSection();
-                    showAdministrativeMenu();
-                    System.out.print("Enter option to continue: ");
+                    //showAdministrativeMenu();
+                    System.out.print("Enter Admin option to continue: ");
                     option = scanner.nextInt();
 
                     break;
@@ -466,13 +534,13 @@ public class Menu {
                         dropProfessor();
                     }
 
-                    showAdministrativeMenu();
-                    System.out.print("Enter option to continue: ");
+                    //showAdministrativeMenu();
+                    System.out.print("Enter Admin option to continue: ");
                     option = scanner.nextInt();
                     break;
                 case 4:
-                    showAdministrativeMenu();
-                    System.out.print("Enter option to continue: ");
+                    //showAdministrativeMenu();
+                    System.out.print("Enter Admin option to continue: ");
                     option = scanner.nextInt();
                     break;
                 case 5:
@@ -486,14 +554,14 @@ public class Menu {
                         dropStudent();
                     }
 
-                    showAdministrativeMenu();
-                    System.out.print("Enter option to continue: ");
+                    //showAdministrativeMenu();
+                    System.out.print("Enter Admin option to continue: ");
                     option = scanner.nextInt();
                     break;
                 case 6:
                     instructorTeaching();
-                    showAdministrativeMenu();
-                    System.out.print("Enter option to continue: ");
+                    //showAdministrativeMenu();
+                    System.out.print("Enter Admin option to continue: ");
                     option = scanner.nextInt();
                     break;
                 case 7:
@@ -506,7 +574,7 @@ public class Menu {
                     break;
                 default:
                     System.err.println("Invalid option, please enter again");
-                    System.out.print("Enter option to continue: ");
+                    System.out.print("Enter Admin option to continue: ");
                     option = scanner.nextInt();
                     break;
             }
@@ -522,7 +590,7 @@ public class Menu {
                        "FROM CS434_MeetingTime M, CS434_Section S, CS434_Course C " +
                        "WHERE M.SecNum = S.SecNum and S.Course = C.ID and M.Term = '" + term + "'";
 
-        String result = connect.select(query, "\t", "CourseTitle", "M.SecNum", "Room", "Day", "StartTime", "EndTime");
+        String result = connect.select(query, "\t");
 
         System.out.print(result);
 
@@ -537,7 +605,7 @@ public class Menu {
                        "FROM CS434_Section S, CS434_Course C, CS434_Instructor I " +
                        "WHERE S.Course = C.ID and S.Instructor = I.ID and Term = '" + term + "'";
 
-        String result = connect.select(query, "\t", "CourseTitle", "SecNum", "FullName", "Capacity");
+        String result = connect.select(query, "\t");
 
         System.out.print(result);
 
@@ -548,19 +616,19 @@ public class Menu {
         System.out.print("Please enter the department to print honors list for: ");
         int deptId = scanner.nextInt();
 
-        String query = "select concat(LName, ', ', FName) AS FullName, GPA " +
-                       "from CS434_Student " +
-                       "where Department = " + deptId + " AND GPA > 3.8";
-        String result = connect.select(query, "\t", "FullName", "GPA");
+        String query = "SELECT concat(LName, ', ', FName) AS FullName, GPA " +
+                       "FROM CS434_Student " +
+                       "WHERE Department = " + deptId + " AND GPA > 3.8";
 
-        if(result.equals("")){
+        String result = connect.select(query, "\t");
+
+        if(result.trim().equals("")){
             System.out.println("There are no honors students in this department");
         } else {
             System.out.print(result);
         }
 
     }
-
     public static void reportingMenu(){
 
         showReportingMenu();
@@ -572,20 +640,20 @@ public class Menu {
             switch(option){
                 case 1:
                     printSchedules();
-                    showReportingMenu();
-                    System.out.print("Enter option to continue: ");
+                    //showReportingMenu();
+                    System.out.print("Enter Reporting option to continue: ");
                     option = scanner.nextInt();
                     break;
                 case 2:
                     printCatalog();
-                    showReportingMenu();
-                    System.out.print("Enter option to continue: ");
+                    //showReportingMenu();
+                    System.out.print("Enter Reporting option to continue: ");
                     option = scanner.nextInt();
                     break;
                 case 3:
                     printHonorsList();
-                    showReportingMenu();
-                    System.out.print("Enter option to continue: ");
+                    //showReportingMenu();
+                    System.out.print("Enter Reporting option to continue: ");
                     option = scanner.nextInt();
                     break;
                 case 4:
@@ -598,7 +666,7 @@ public class Menu {
                     break;
                 default:
                     System.err.println("Invalid option, please enter again");
-                    System.out.print("Enter option to continue: ");
+                    System.out.print("Enter Reporting option to continue: ");
                     option = scanner.nextInt();
                     break;
             }

@@ -8,10 +8,13 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.Properties;
 
 public class MysqlConnect implements Closeable, Drivers {
+
+    private static final boolean traceOn = false;
 
     private static final String INSERT_ROW = "INSERT INTO";
     private static final String DELETE_ROW = "DELETE FROM";
@@ -83,7 +86,9 @@ public class MysqlConnect implements Closeable, Drivers {
         }
     }
 
-    private void insert(String query, Object... columns){
+    private int insert(String query, Object... columns){
+
+        int status = -1;
 
         try{
 
@@ -100,23 +105,27 @@ public class MysqlConnect implements Closeable, Drivers {
                 }
             }
 
-            pstmt.executeUpdate();
+            status = pstmt.executeUpdate();
             pstmt.close();
 
         } catch(SQLException ex){
-            ex.printStackTrace();
-            System.err.println(ex);
-            System.exit(1);
+            if(traceOn)
+                ex.printStackTrace();
+            else
+                System.err.println(ex);
         }
+
+        return status;
     }
 
-    public void insert(String tableName, String[] columnNames, Object... columnValues){
+    public int insert(String tableName, String[] columnNames, Object... columnValues){
 
         if(columnNames.length != columnValues.length){
             System.err.println("Error: Column names and values array have to be same length");
-            return;
+            return -1;
         }
 
+        int status = -1;
         String query = INSERT_ROW + " " + tableName + " ";
 
         StringBuffer cnames = new StringBuffer("(");
@@ -138,26 +147,33 @@ public class MysqlConnect implements Closeable, Drivers {
         query = query + cnames.toString() + " VALUES " + cvalues.toString();
 
         System.out.println(query);
-        insert(query, columnValues);
+        status = insert(query, columnValues);
 
+        return status;
     }
 
     public void update(String query){
 
     }
 
-    public void delete(String query){
+    public int delete(String query){
+
+        int status = -1;
 
         try{
 
             Statement stmt = conn.createStatement();
-            stmt.executeUpdate(query);
+            status = stmt.executeUpdate(query);
             stmt.close();
 
         } catch(SQLException ex){
-            System.err.println(ex);
-            System.exit(1);
+            if(traceOn)
+                ex.printStackTrace();
+            else
+                System.err.println(ex);
         }
+
+        return status;
 
     }
 
@@ -183,10 +199,51 @@ public class MysqlConnect implements Closeable, Drivers {
             pstmt.close();
 
         } catch(SQLException ex){
-            System.err.println(ex);
-            System.exit(1);
+            if(traceOn)
+                ex.printStackTrace();
+            else
+                System.err.println(ex);
         }
 
+    }
+
+    public String select(String query, String delim){
+
+        String result = "";
+
+        try {
+
+            Statement stmt = conn.createStatement();
+            ResultSet resultSet = stmt.executeQuery(query);
+
+            ResultSetMetaData rsmd = resultSet.getMetaData();
+            int numOfColumns = rsmd.getColumnCount();
+
+            while(resultSet.next()){
+
+                for(int i = 0; i < numOfColumns; i++){
+
+                    if(i != (numOfColumns - 1))
+                        result += resultSet.getString(rsmd.getColumnName(i+1)) + delim;
+                    else
+                        result += resultSet.getString(rsmd.getColumnName(i+1));
+
+                }
+
+                result += "\n";
+            }
+
+            resultSet.close();
+            stmt.close();
+
+        } catch(Exception ex) {
+            if(traceOn)
+                ex.printStackTrace();
+            else
+                System.out.println(ex);
+        }
+
+        return result;
     }
 
     public String select(String query, String delim, String... columns){
@@ -201,21 +258,25 @@ public class MysqlConnect implements Closeable, Drivers {
             while(rset.next()){
 
                 for(int index = 0; index < columns.length; index++){
+
                     if(index != (columns.length - 1))
-                        result = result + rset.getString(columns[index]) + delim;
+                        result += rset.getString(columns[index]) + delim;
                     else
-                        result = result + rset.getString(columns[index]);
+                        result += rset.getString(columns[index]);
+
                 }
 
-                result = result + "\n";
+                result += "\n";
             }
 
             rset.close();
             stmt.close();
 
         } catch(SQLException ex){
-            System.err.println(ex);
-            System.exit(1);
+            if(traceOn)
+                ex.printStackTrace();
+            else
+                System.err.println(ex);
         }
 
         return result;
