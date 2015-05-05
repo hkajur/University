@@ -10,7 +10,7 @@ public class Menu {
     private static final String[] INS_COURSE_COLUMNS = {"CourseTitle", "Hours", "Department"};
     private static final String[] INS_INSTRUCTOR_COLUMNS = {"LName", "FName", "Department", "Office", "Phone", "Email"};
     private static final String[] INS_STUDENT_COLUMNS = {"LName", "FName", "Username", "Phone", "Street", "City", "State", "Zip", "Degree", "Department" };
-    private static final String[] INS_SECTION_COLUMNS = {"Term", "SecNum", "Course", "Department", "Instructor", "Capacity"};
+    private static final String[] INS_SECTION_COLUMNS = {"Term", "SecNum", "Course", "Instructor", "Capacity"};
 
     public static void showMainMenu(){
 
@@ -302,7 +302,7 @@ public class Menu {
 
     }
 
-    public static void insertSection(){
+    public static void addSection(){
 
         System.out.print("Enter the term info: ");
         String term = scanner.next();
@@ -313,23 +313,19 @@ public class Menu {
         System.out.print("Enter the Course Id: ");
         int courseId = scanner.nextInt();
 
-        System.out.print("Enter the Department Id: ");
-        int deptId = scanner.nextInt();
-
         System.out.print("Enter the Instructor Id: ");
         int instrId = scanner.nextInt();
 
         System.out.print("Enter the number of maximum students: ");
         int capacity = scanner.nextInt();
 
-        Object[] columnValues = new Object[6];
+        Object[] columnValues = new Object[5];
 
         columnValues[0] = term;
         columnValues[1] = secNum;
         columnValues[2] = courseId;
-        columnValues[3] = deptId;
-        columnValues[4] = instrId;
-        columnValues[5] = capacity;
+        columnValues[3] = instrId;
+        columnValues[4] = capacity;
 
         int status = connect.insert("CS434_Section", INS_SECTION_COLUMNS, columnValues);
 
@@ -339,6 +335,80 @@ public class Menu {
             System.out.println("Section couldn't be created for some reason");
         } else {
             System.out.println("Section successfully Inserted");
+        }
+    }
+
+    public static void dropSection(){
+
+        System.out.print("Enter the term info: ");
+        String term = scanner.next();
+
+        System.out.print("Enter the section number: ");
+        int secNum = scanner.nextInt();
+
+        System.out.print("Enter the Course Id: ");
+        int courseId = scanner.nextInt();
+
+        String query = "DELETE FROM CS434_Section" +
+                       " WHERE Term = '" + term + "'" +
+                       " AND SecNum = " + secNum +
+                       " AND Course = " + courseId;
+
+        int status = connect.delete(query);
+
+        if(status == -1){
+            System.out.println("Mysql error during deletion");
+        } else if(status == 0){
+            System.out.println("Section couldn't be deleted for some reason");
+        } else {
+            System.out.println("Section successfully Deleted");
+        }
+    }
+
+    public static void updateSection(){
+
+        System.out.print("Enter the term info: ");
+        String term = scanner.next();
+
+        System.out.print("Enter the section number: ");
+        int secNum = scanner.nextInt();
+
+        System.out.print("Enter the Course Id: ");
+        int courseId = scanner.nextInt();
+
+        System.out.print("Enter the Instructor Id: ");
+        int instrId = scanner.nextInt();
+
+        System.out.print("Enter the number of maximum students: ");
+        int capacity = scanner.nextInt();
+
+        String query = "UPDATE CS434_Section" +
+                       " SET Instructor = " + instrId + "," +
+                       " Capacity = " + capacity +
+                       " WHERE Term = '" + term + "'" +
+                       " AND SecNum = " + secNum +
+                       " AND Course = " + courseId;
+
+        int status = connect.delete(query);
+
+        if(status == -1){
+            System.out.println("Mysql error during update");
+        } else if(status == 0){
+            System.out.println("Section couldn't be updated for some reason");
+        } else {
+            System.out.println("Section successfully Updated");
+        }
+    }
+
+    public static void addSections(){
+
+        System.out.print("Do you want to continue adding sections? ");
+        String option = scanner.next();
+
+        while(option.equalsIgnoreCase("y") || option.equalsIgnoreCase("yes")){
+            addSection();
+            System.out.print("Do you want to continue adding sections? ");
+            option = scanner.next();
         }
     }
 
@@ -490,7 +560,6 @@ public class Menu {
         System.out.flush();
     }
 
-
     public static void administrativeMenu(){
 
         showAdministrativeMenu();
@@ -517,7 +586,7 @@ public class Menu {
 
                     break;
                 case 2:
-                    insertSection();
+                    addSections();
                     //showAdministrativeMenu();
                     System.out.print("Enter Admin option to continue: ");
                     option = scanner.nextInt();
@@ -530,7 +599,7 @@ public class Menu {
 
                     if(professorOp == 1){
                         insertProfessor();
-                    } else {
+                    } else if(professorOp == 2){
                         dropProfessor();
                     }
 
@@ -539,6 +608,18 @@ public class Menu {
                     option = scanner.nextInt();
                     break;
                 case 4:
+
+                    System.out.print("Press 1 to add, Press 2 to drop, Press 3 to Update Section: ");
+                    int sectionOp = scanner.nextInt();
+
+                    if(sectionOp == 1){
+                        addSection();
+                    } else if(sectionOp == 2){
+                        dropSection();
+                    } else if(sectionOp == 3){
+                        updateSection();
+                    }
+
                     //showAdministrativeMenu();
                     System.out.print("Enter Admin option to continue: ");
                     option = scanner.nextInt();
@@ -629,6 +710,7 @@ public class Menu {
         }
 
     }
+
     public static void reportingMenu(){
 
         showReportingMenu();
@@ -672,6 +754,7 @@ public class Menu {
             }
         }
     }
+
 
     public static void main(String[] args){
 

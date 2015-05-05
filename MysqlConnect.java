@@ -152,8 +152,24 @@ public class MysqlConnect implements Closeable, Drivers {
         return status;
     }
 
-    public void update(String query){
+    public int update(String query){
 
+        int status = -1;
+
+        try{
+
+            Statement stmt = conn.createStatement();
+            status = stmt.executeUpdate(query);
+            stmt.close();
+
+        } catch(SQLException ex){
+            if(traceOn)
+                ex.printStackTrace();
+            else
+                System.err.println(ex);
+        }
+
+        return status;
     }
 
     public int delete(String query){
