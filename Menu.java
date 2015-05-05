@@ -186,6 +186,12 @@ public class Menu {
         System.out.print("Enter Student ID: " );
         int id = scanner.nextInt();
 
+        String calculateQuery = "UPDATE CS434_Student " +
+                                " SET GPA = ( SELECT AVG(CALCULATE_GPA(grade)) FROM CS434_Enrollment WHERE CALCULATE_GPA(grade) >= 0 AND Student = " + id + ")" +
+                                " WHERE Id = " + id;
+
+        connect.update(calculateQuery);
+
         String query = "SELECT GPA FROM CS434_Student WHERE id = "  + id;
         String result = connect.select(query, "");
 
